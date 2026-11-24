@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reserva — Demonstração</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #e8efeb;
+            color: #18342b;
+            font: 1rem/1.5 system-ui, sans-serif;
+        }
+
+        main {
+            max-width: 42rem;
+            margin: 1rem auto;
+            background: white;
+            border-radius: 1rem;
+        }
+
+        header, section, form {
+            padding: 1rem;
+        }
+
+        header {
+            background: #125744;
+            color: white;
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+        #chat {
+            background: #f3f0e8;
+            min-height: 10rem;
+        }
+
+        .bubble {
+            padding: 1rem;
+            border-radius: 0.8rem;
+            background: white;
+            margin: 0.8rem 0;
+            overflow-wrap: anywhere;
+        }
+
+        .sent {
+            background: #d5f1dc;
+        }
+
+        .auto {
+            background: #fdf3e3;
+            border-left: 4px solid #b56a00;
+        }
+
+        .auto strong {
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .prazo {
+            font-weight: 700;
+        }
+
+        label, textarea, button {
+            display: block;
+            width: 100%;
+            font: inherit;
+        }
+
+        textarea {
+            padding: 0.7rem;
+            border: 1px solid #687b72;
+            border-radius: 0.5rem;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 0.8rem;
+            padding: 0.8rem;
+            background: #125744;
+            color: white;
+            border: 0;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        button:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid #b56a00;
+            outline-offset: 3px;
+        }
+
+        small {
+            display: block;
+            margin-top: 0.7rem;
+        }
+
+        p {
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+
+        <header>
+            <h1>Restaurante Beira Rio</h1>
+
+            <p>
+                Demonstração fictícia • 20h00 • Fora do expediente
+            </p>
+        </header>
+
+        <!-- Área da conversa -->
+        <section
+            id="chat"
+            role="log"
+            aria-live="polite"
+            aria-label="Conversa"
+        >
+            <p>Simulação de reserva pelo WhatsApp.</p>
+        </section>
+
+        <!-- Formulário de envio -->
+        <form id="form">
+
+            <label for="msg">
+                Mensagem de reserva (dados fictícios)
+            </label>
+
+            <textarea id="msg" rows="3" required aria-describedby="error">Gostaria de reservar uma mesa para quatro pessoas.</textarea>
+
+            <button type="submit">
+                Enviar mensagem
+            </button>
+
+            <p id="error" role="alert" aria-live="assertive"></p>
+
+            <small>
+                Simulação local: nenhuma mensagem é enviada
+                ao WhatsApp real.
+            </small>
+
+        </form>
+
+    </main>
+
+    <script>
+        const form = document.getElementById('form');
+        const msg = document.getElementById('msg');
+        const chat = document.getElementById('chat');
+
+        form.addEventListener('submit', function(e) {
+
+            e.preventDefault();
+
+            const value = msg.value.trim();
+
+            // Validação da mensagem
+            if (!value) {
+                document.getElementById('error').textContent =
+                    'Digite uma mensagem.';
+
+                msg.setAttribute('aria-invalid', 'true');
+                msg.focus();
+                return;
+            }
+
+            document.getElementById('error').textContent = '';
+            msg.removeAttribute('aria-invalid');
+
+            // Exibe a mensagem enviada pelo cliente
+            const sent = document.createElement('div');
+
+            sent.className = 'bubble sent';
+            sent.textContent = value;
+
+            chat.appendChild(sent);
+
+            // Cria a resposta automática
+            const reply = document.createElement('div');
+
+            reply.className = 'bubble auto';
+
+            // Identifica que não é um atendimento humano
+            const heading = document.createElement('strong');
+
+            heading.textContent =
+                '🤖 Mensagem automática — não é atendimento humano';
+
+            reply.appendChild(heading);
+
+            // Conteúdo da resposta automática (strings fixas, sem dado de usuário)
+            const messages = [
+                'Recebemos sua solicitação de reserva às 20h00.',
+
+                'Nosso horário de atendimento é das 8h às 18h. Um atendente retornará <span class="prazo">até as 10h do próximo dia de funcionamento</span>.',
+
+                'Sua reserva ainda não está confirmada. Aguarde o atendimento humano.'
+            ];
+
+            messages.forEach(function(html) {
+
+                const p = document.createElement('p');
+
+                p.innerHTML = html;
+
+                reply.appendChild(p);
+
+            });
+
+            // Exibe a resposta na conversa
+            chat.appendChild(reply);
+
+            // Limpa o campo de mensagem
+            msg.value = '';
+
+            // Posiciona a tela na resposta recebida
+            reply.scrollIntoView({
+                block: 'nearest'
+            });
+
+        });
+    </script>
+
+</body>
+</html>
